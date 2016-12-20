@@ -12,6 +12,10 @@ java -jar gfwlist2pac-1.0-jar-with-dependencies.jar -o proxy.pac -p "SOCKS5 127.
 
 
 # 附录
+
+## PAC 简介
+https://zh.wikipedia.org/wiki/%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE
+
 ## gfwlist 文件语法
 ```
 ! 用户自定义的代理规则
