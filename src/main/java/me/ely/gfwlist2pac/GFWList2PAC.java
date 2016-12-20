@@ -29,8 +29,15 @@ public class GFWList2PAC {
 
         String content = "";
         if (input.length() > 0) {
-            InputStream in = new FileInputStream(input);
-            content = readStream(in);
+            if (input.startsWith("http")) {
+                logger.info("Downloading gfwlist from {}", input);
+                content = fetchGFWList(input);
+            } else {
+                logger.info("read local gfwlist file from {}", input);
+                InputStream in = new FileInputStream(input);
+                content = readStream(in);
+                // TODO invoke in.close();
+            }
         } else {
             logger.info("Downloading gfwlist from {}", GFWLIST_URL);
             content = fetchGFWList(GFWLIST_URL);
@@ -38,12 +45,13 @@ public class GFWList2PAC {
 
         String userRuleContent = "";
         if (userRule.length() > 0) {
-            if (!argsMap.get("userRule").startsWith("http")) {
-                InputStream in = new FileInputStream(userRule);
-                userRuleContent = readStream(in);
-            } else {
+            if (userRule.startsWith("http")) {
                 logger.info("Downloading user rule from {}", userRule);
                 userRuleContent = fetchGFWList(userRule);
+            } else {
+                logger.info("read local user rule file from {}", userRule);
+                InputStream in = new FileInputStream(userRule);
+                userRuleContent = readStream(in);
             }
         }
 
@@ -143,7 +151,7 @@ public class GFWList2PAC {
             String[] domainParts = domain.split("\\.");
             String lastRootDomain = null;
             for (int i = 0; i < domainParts.length; i++) {
-                String rootDomain = String.join(".", sub(domainParts, domainParts.length - i - 1, domainParts.length));
+                String rootDomain = String.join(".", Arrays.copyOfRange(domainParts, domainParts.length - i - 1, domainParts.length));
                 if (i == 0) {
                     if (!tlds.contains(rootDomain)) {
                         // root_domain is not a valid tld
@@ -165,15 +173,8 @@ public class GFWList2PAC {
         return newDomains;
     }
 
-    public static String[] sub(String[] arr, int start, int end) {
-        String[] newArr = new String[end - start];
-        for (int i = start,j = 0; i < end; i++, j++) {
-            newArr[j] = arr[i];
-        }
-        return newArr;
-    }
-
     public static String generatePAC(Set<String> domains, String proxy) {
+        logger.info("generating pac file...");
         String pacContent = readStream(GFWList2PAC.class.getResourceAsStream("/proxy.pac"));
         Map<String, Integer> domainMap = new HashMap<>();
         for (String domain : domains) {
