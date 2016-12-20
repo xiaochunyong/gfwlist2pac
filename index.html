@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GFWList Test</title>
+    <script type="text/javascript" src="gfwlist.js"></script>
+    <script type="text/javascript">
+        function testURL() {
+            var result = FindProxyForURL("", document.getElementById("url").value);
+            alert(result);
+        }
+    </script>
+</head>
+<body>
+    URL: <input id="url" type="text"/> <button onclick="testURL()">测试</button>
+</body>
+</html>
